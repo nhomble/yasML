@@ -1,6 +1,6 @@
 
 CC = gcc
-CFLAGS = -lm -g -Wall -O0 -Werror -Wshadow -Wwrite-strings -ansi -pedantic-errors 
+CFLAGS = -lm -g -Wall -O0 -Wshadow -Wwrite-strings -ansi -pedantic-errors 
 PROGS = test 
 
 .PHONY: all clean
