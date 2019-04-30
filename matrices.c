@@ -58,7 +58,7 @@ Matrix *constructor(int r, int c){
 	m->columns = c;
 	m->numbers = malloc(sizeof(double *)*c);
 	for(i = 0; i < c; i++)
-		m->numbers[i] = calloc(sizeof(double), r);	
+		m->numbers[i] = calloc(sizeof(double), r);
 	return m;
 }
 
@@ -217,7 +217,7 @@ int equals(Matrix *m1, Matrix *m2){
 	return SUCC;
 }
 
-Matrix *clone(Matrix *m){
+Matrix *clonemx(Matrix *m){
 	Matrix *copy;
 	unsigned int i, j;
 	copy = constructor(m->rows, m->columns);
@@ -395,7 +395,7 @@ double determinant(Matrix *m){
 		return -1;
 	if(m->columns != m->rows)
 		return -1;
-	copy = clone(m);
+	copy = clonemx(m);
 	det = 1;
 
 	/* reduce each of the rows to get a lower triangle */	
@@ -437,7 +437,7 @@ Matrix *solved_aug_matrix(Matrix *m){
 	unsigned int i, j, k, l;
 	if(m == NULL)
 		return NULL;
-	low = clone(m);
+	low = clonemx(m);
 	absolute = abs(m->rows - m->columns);
 	for(k = 0; k < absolute; k++){
 		/* reduce each of the rows to get a lower triangle */	
@@ -488,7 +488,7 @@ double *eigenvalues(Matrix *m){
 	if(m->rows != m->columns)
 		return NULL;
 	values = malloc(sizeof(double)*m->rows);
-	red = clone(m);
+	red = clonemx(m);
 	/* reduce each of the rows to get a lower triangle */	
 	for(i = 0; i < red->columns; i++){
 		for(j = i + 1; j < red->rows; j++){
