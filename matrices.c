@@ -2,12 +2,10 @@
 #include<stdlib.h>
 #include"matrices.h"
 #include<stdio.h>
-#include<err.h>
 #include<time.h>
 
 #define SUCC 1
 #define FAIL -1
-#define STRLEN 100
 /*
 * a matrix is 
 		columns
