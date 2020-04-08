@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 11)
 add_library(matrix_lib matrices.h matrices.c)
 add_executable(tests test.c)
 
-target_link_libraries(tests matrix_lib)
+target_link_libraries(tests matrix_lib m)
