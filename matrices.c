@@ -264,7 +264,7 @@ Matrix *multiply(Matrix *m1, Matrix *m2){
 	product = constructor(m1->rows, m2->columns);
 	for(i = 0; i < product->columns; i++){
 		for(j = 0; j < product->rows; j++){
-			product->numbers[i][j] = vector_multiply(trans->numbers[j], m2->numbers[i], product->rows);
+			product->numbers[i][j] = vector_multiply(trans->numbers[j], m2->numbers[i], m2->rows);
 		}
 	}
 	destroy_matrix(trans);
