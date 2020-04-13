@@ -1,4 +1,6 @@
 yet another simple Matrix Library - (yasML)
+===========================================
+![C CI](https://github.com/nhomble/yasML/workflows/C/C++%20CI/badge.svg?branch=master)
 
 Purpose:
 Reading online, I had a hard time finding a matrix library in C
