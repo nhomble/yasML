@@ -4,7 +4,7 @@ LIB_DIR			= ./lib
 DEPS			= yasML.h
 
 TEST_DIR		= ./tests
-TEST_INC_DIR	= -I./lib/unity
+TEST_INC_DIR	= -I./lib/unity/src
 TEST_LIBS		= -lm
 
 test: multiply_test identity_test
@@ -17,8 +17,8 @@ multiply_test: unity.o yasML.h $(TEST_DIR)/multiply.c
 identity_test: unity.o yasML.h $(TEST_DIR)/identity.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $^ $(TEST_INC_DIR) $(TEST_LIBS)
 
-unity.o: lib/unity/unity.c
-	$(CC) -c $(LIB_DIR)/unity/unity.c $(INC_DIR)
+unity.o: lib/unity/src/unity.c
+	$(CC) -c $(LIB_DIR)/unity/src/unity.c $(INC_DIR)
 
 .PHONY: clean test
 
