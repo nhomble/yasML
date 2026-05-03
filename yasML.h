@@ -371,9 +371,9 @@ Matrix *gram_schmidt(Matrix *m){
 double *projection(Matrix *m, double *v, int length){
 	unsigned int i, j;
 	double *sum, *copy, *vector, factor;
-	if(m->rows != length)
-		return NULL;
 	if(m == NULL || v == NULL)
+		return NULL;
+	if(m->rows != length)
 		return NULL;
 	sum = calloc(sizeof(double), m->rows);
 	copy = malloc(sizeof(double)*m->rows);
