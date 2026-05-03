@@ -1,0 +1,4 @@
+*.o
+*.gch
+tests/*_test
+tests/*.dSYM/
