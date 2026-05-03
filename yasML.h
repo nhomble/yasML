@@ -101,6 +101,8 @@ Matrix *identity(int length){
 	unsigned int i, j;
 	Matrix *m;
 	m = constructor(length, length);
+	if(m == NULL)
+		return NULL;
 	for(i = 0; i < length; i++){
 		j = i;
 		(m->numbers[i])[j] = 1;
