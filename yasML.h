@@ -167,7 +167,7 @@ int reduce(Matrix *m, int a, int b, float factor){
 	int i;
 	if(m == NULL)
 		return FAIL;
-	if(m->rows < a || m->rows < b)
+	if(a < 0 || b < 0 || a >= m->rows || b >= m->rows)
 		return FAIL;
 	for(i = 0; i < m->columns; i++){
 		m->numbers[i][b]  -= m->numbers[i][a]*factor;
