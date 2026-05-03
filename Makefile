@@ -7,7 +7,7 @@ TEST_DIR		= ./tests
 TEST_INC_DIR	= -I./lib/unity/src
 TEST_LIBS		= -lm
 
-test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_schmidt_test projection_test
+test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_schmidt_test projection_test inversion_test
 	$(TEST_DIR)/multiply_test
 	$(TEST_DIR)/identity_test
 	$(TEST_DIR)/readme_test
@@ -15,6 +15,7 @@ test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_
 	$(TEST_DIR)/reduce_test
 	$(TEST_DIR)/gram_schmidt_test
 	$(TEST_DIR)/projection_test
+	$(TEST_DIR)/inversion_test
 
 multiply_test: unity.o yasML.h $(TEST_DIR)/multiply.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
@@ -35,6 +36,9 @@ gram_schmidt_test: unity.o yasML.h $(TEST_DIR)/gram_schmidt.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 projection_test: unity.o yasML.h $(TEST_DIR)/projection.c
+	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
+
+inversion_test: unity.o yasML.h $(TEST_DIR)/inversion.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 unity.o: lib/unity/src/unity.c

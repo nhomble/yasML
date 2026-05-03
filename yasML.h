@@ -179,7 +179,8 @@ int reduce(Matrix *m, int a, int b, float factor){
 /* matrix m will become the identity so the caller must save their matrix themselves  */
 Matrix *inversion(Matrix *m){
 	Matrix *invert;
-	unsigned int i, j, l;
+	unsigned int i, l;
+	int j;
 	double factor;
 	if(m == NULL)
 		return NULL;
@@ -209,8 +210,6 @@ Matrix *inversion(Matrix *m){
 		for(j = i-1; j>=0; j--){
 			if((m)->numbers[i][i] == 0)
 				continue;
-			if(j == -1)
-				break;
 			factor = (m)->numbers[i][j]/((m)->numbers[i][i]);
 			reduce(invert, i, j, factor);
 			reduce((m), i, j, factor);
