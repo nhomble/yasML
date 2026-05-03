@@ -338,7 +338,9 @@ Matrix *gram_schmidt(Matrix *m){
 	Matrix *ortho;
 	double *ortho_vector, *temp;
 	unsigned int i, j;
-	if(m != NULL || m->rows == m->columns || zero_vector(m) != 1){
+	if(m == NULL)
+		return NULL;
+	if(m->rows == m->columns || zero_vector(m) != 1){
 		/* create my empy matrix to have new orthogonal vector be added to */
 		ortho = constructor(m->rows, 1);
 		/* initialize with the first vector */
