@@ -73,7 +73,7 @@ int zero_vector(Matrix *m){
 			if(m->numbers[i][j] == 0)
 				counter++;
 		}
-		if(counter == 3)
+		if(counter == m->rows)
 			return SUCC;
 	}
 	return FAIL;
