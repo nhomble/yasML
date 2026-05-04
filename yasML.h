@@ -522,8 +522,8 @@ Matrix *solved_aug_matrix(Matrix *m){
 			reduce(low, i, j, factor);
 		}
 	}
-	/* scale everything to 1 */
-	for(i = 0; i < low->columns; i++){
+	/* scale everything to 1 — bounded by both dimensions since we index the diagonal */
+	for(i = 0; i < low->columns && i < low->rows; i++){
 		if(low->numbers[i][i]==0)
 			continue;
 		factor = 1/(low->numbers[i][i]);

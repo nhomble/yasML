@@ -55,7 +55,7 @@ row_swap_test: unity.o yasML.h $(TEST_DIR)/row_swap.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 solved_aug_matrix_test: unity.o yasML.h $(TEST_DIR)/solved_aug_matrix.c
-	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
+	$(CC) $(CFLAGS) -fsanitize=address -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 eigenvalues_test: unity.o yasML.h $(TEST_DIR)/eigenvalues.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)

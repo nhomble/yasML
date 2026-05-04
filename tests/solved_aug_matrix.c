@@ -63,6 +63,30 @@ void test_solved_aug_2x2_swap(){
     destroy_matrix(r);
 }
 
+/* non-square 3x4 augmented [A|b] with diagonal A.
+   Scaling loop pre-fix reads numbers[3][3] OOB (col 3 has only `rows`=3 entries).
+   ASan detects heap-buffer-overflow. */
+void test_solved_aug_3x4_augmented(){
+    Matrix *m = constructor(3, 4);
+    Matrix *r;
+    /* row-major: [[2,0,0,4],[0,3,0,9],[0,0,5,10]] → x = (2, 3, 2) */
+    m->numbers[0][0] = 2; m->numbers[0][1] = 0; m->numbers[0][2] = 0;
+    m->numbers[1][0] = 0; m->numbers[1][1] = 3; m->numbers[1][2] = 0;
+    m->numbers[2][0] = 0; m->numbers[2][1] = 0; m->numbers[2][2] = 5;
+    m->numbers[3][0] = 4; m->numbers[3][1] = 9; m->numbers[3][2] = 10;
+    r = solved_aug_matrix(m);
+    TEST_ASSERT_NOT_NULL(r);
+    /* A part should be identity, b part should be solution */
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 1.0f, (float)r->numbers[0][0]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 1.0f, (float)r->numbers[1][1]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 1.0f, (float)r->numbers[2][2]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 2.0f, (float)r->numbers[3][0]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 3.0f, (float)r->numbers[3][1]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 2.0f, (float)r->numbers[3][2]);
+    destroy_matrix(m);
+    destroy_matrix(r);
+}
+
 /* singular triggers zero pivot in upper-triangle phase → unsigned wrap */
 void test_solved_aug_singular_terminates(){
     Matrix *m, *r;
@@ -103,6 +127,7 @@ int main(void){
     RUN_TEST(test_solved_aug_2x2_diag);
     RUN_TEST(test_solved_aug_3x3_upper_triangular);
     RUN_TEST(test_solved_aug_2x2_swap);
+    RUN_TEST(test_solved_aug_3x4_augmented);
     RUN_TEST(test_solved_aug_singular_terminates);
     RUN_TEST(test_solved_aug_4x4_diag);
     return UNITY_END();
