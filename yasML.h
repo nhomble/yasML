@@ -545,6 +545,7 @@ double *eigenvalues(Matrix *m){
 	}
 	for(i = 0; i < red->columns; i++)
 		values[i] = red->numbers[i][i];
+	destroy_matrix(red);
 	return values;
 }
 
