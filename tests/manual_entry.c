@@ -26,11 +26,23 @@ void test_manual_entry_2x3(){
     destroy_matrix(m);
 }
 
+/* multi-char decimal should not be truncated by tiny buffer */
+void test_manual_entry_decimal(){
+    Matrix *m = NULL;
+    write_input("1 | 1\n123.45\n");
+    freopen(INPUT_PATH, "r", stdin);
+    manual_entry(&m);
+    TEST_ASSERT_NOT_NULL(m);
+    TEST_ASSERT_FLOAT_WITHIN(1e-3f, 123.45f, (float)m->numbers[0][0]);
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_manual_entry_2x3);
+    RUN_TEST(test_manual_entry_decimal);
     return UNITY_END();
 }

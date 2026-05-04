@@ -554,11 +554,11 @@ void manual_entry(Matrix **m){
 	Matrix *temp;
 	int i, rows, cols;
 	double number;
-	char buffer[12];
+	char buffer[64];
 	printf("Rows | Columns\n");
 	/* should only execute once but I need to do error detection */
 	rows = -1; cols = -1;
-	while(fgets(buffer, 12, stdin) != NULL){
+	while(fgets(buffer, sizeof(buffer), stdin) != NULL){
 		sscanf(buffer, "%d | %d", &rows, &cols);
 		break;
 	}
@@ -569,7 +569,7 @@ void manual_entry(Matrix **m){
 		return;
 	i = 0;
 	printf("start entering numbers from left to right, top to bottom\nand use either EOF to end input\n");
-	while(i < rows*cols && fgets(buffer, 6, stdin) != NULL){
+	while(i < rows*cols && fgets(buffer, sizeof(buffer), stdin) != NULL){
 		number = atof(buffer);
 		temp->numbers[i%cols][i/cols] = number;
 		i++;
