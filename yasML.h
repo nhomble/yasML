@@ -369,7 +369,7 @@ Matrix *gram_schmidt(Matrix *m){
 
 double *projection(Matrix *m, double *v, int length){
 	unsigned int i, j;
-	double *sum, *copy, *vector, factor;
+	double *sum, *copy, *vector, factor, denom;
 	if(m == NULL || v == NULL)
 		return NULL;
 	if(m->rows != length)
@@ -380,7 +380,10 @@ double *projection(Matrix *m, double *v, int length){
 		for(j = 0; j < m->rows; j++)
 			copy[j] = m->numbers[i][j];
 		vector = copy;
-		factor = vector_multiply(v, vector, m->rows)/vector_multiply(vector, vector, m->rows);
+		denom = vector_multiply(vector, vector, m->rows);
+		if(denom == 0)
+			continue;
+		factor = vector_multiply(v, vector, m->rows)/denom;
 		scalar_vector_multiplication(factor, vector, m->rows);
 		vector_addition(sum, vector, m->rows);
 	}
