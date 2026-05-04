@@ -68,9 +68,9 @@ int zero_vector(Matrix *m){
 	if(m == NULL)
 		return FAIL;
 	for(i = 0; i < m->columns; i++){
-		counter = 0;	
+		counter = 0;
 		for(j = 0; j < m->rows; j++){
-			if(m->numbers[i][j] == 0)
+			if(fabs(m->numbers[i][j]) < 1e-9)
 				counter++;
 		}
 		if(counter == m->rows)

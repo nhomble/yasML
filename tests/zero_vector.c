@@ -34,6 +34,17 @@ void test_zero_vector_none(){
     destroy_matrix(m);
 }
 
+/* near-zero column (FP noise) should be treated as zero */
+void test_zero_vector_fp_noise(){
+    Matrix *m = constructor(2, 2);
+    m->numbers[0][0] = 1e-15;
+    m->numbers[0][1] = 1e-15;
+    m->numbers[1][0] = 1;
+    m->numbers[1][1] = 2;
+    TEST_ASSERT_EQUAL(SUCC, zero_vector(m));
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
@@ -42,5 +53,6 @@ int main(void){
     RUN_TEST(test_zero_vector_2x2);
     RUN_TEST(test_zero_vector_4x4);
     RUN_TEST(test_zero_vector_none);
+    RUN_TEST(test_zero_vector_fp_noise);
     return UNITY_END();
 }
