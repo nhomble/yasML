@@ -522,12 +522,12 @@ double *eigenvalues(Matrix *m){
 		return NULL;
 	values = malloc(sizeof(double)*m->rows);
 	red = clonemx(m);
-	/* reduce each of the rows to get a lower triangle */	
+	/* reduce each of the rows to get a lower triangle */
 	for(i = 0; i < red->columns; i++){
 		for(j = i + 1; j < red->rows; j++){
 			if(red->numbers[i][i] == 0){
 				for(l = i+1; l < red->rows; l++){
-					if(red->numbers[l][l] != 0){
+					if(red->numbers[i][l] != 0){
 						row_swap(red, i, l);
 						break;
 					}
