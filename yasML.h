@@ -412,7 +412,8 @@ static void vector_subtraction(double *v1, double *v2, int length){
 
 double determinant(Matrix *m){
 	Matrix *copy;
-	unsigned int i, j;
+	unsigned int i, j, l;
+	int sign;
 	double det, factor;
 	if(m == NULL)
 		return -1;
@@ -420,12 +421,24 @@ double determinant(Matrix *m){
 		return -1;
 	copy = clonemx(m);
 	det = 1;
+	sign = 1;
 
-	/* reduce each of the rows to get a lower triangle */	
+	/* reduce each of the rows to get a lower triangle */
 	for(i = 0; i < copy->columns; i++){
+		if(copy->numbers[i][i] == 0){
+			for(l = i + 1; l < copy->rows; l++){
+				if(copy->numbers[i][l] != 0){
+					row_swap(copy, i, l);
+					sign = -sign;
+					break;
+				}
+			}
+			if(copy->numbers[i][i] == 0){
+				destroy_matrix(copy);
+				return 0;
+			}
+		}
 		for(j = i + 1; j < copy->rows; j++){
-			if(copy->numbers[i][i] == 0)
-				continue;
 			factor = copy->numbers[i][j]/(copy->numbers[i][i]);
 			reduce(copy, i, j, factor);
 		}
@@ -433,7 +446,7 @@ double determinant(Matrix *m){
 	for(i = 0; i < copy->columns; i++)
 		det *= copy->numbers[i][i];
 	destroy_matrix(copy);
-	return det;
+	return det * sign;
 }
 
 Matrix *orthonormal_basis(Matrix *m){
