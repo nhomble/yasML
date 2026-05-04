@@ -246,7 +246,7 @@ int equals(Matrix *m1, Matrix *m2){
 		return FAIL;
 	for(i = 0; i < m1->columns; i++){
 		for(j = 0; j < m1->rows; j++){
-			if(m1->numbers[i][j] != m2->numbers[i][j])
+			if(fabs(m1->numbers[i][j] - m2->numbers[i][j]) > 1e-9)
 				return FAIL;
 		}
 	}
