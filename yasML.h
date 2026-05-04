@@ -469,47 +469,44 @@ Matrix *orthonormal_basis(Matrix *m){
 
 Matrix *solved_aug_matrix(Matrix *m){
 	Matrix *low;
-	double factor, absolute;
-	unsigned int i, j, k, l;
+	double factor;
+	unsigned int i, j, l;
 	if(m == NULL)
 		return NULL;
 	low = clonemx(m);
-	absolute = abs(m->rows - m->columns);
-	for(k = 0; k < absolute; k++){
-		/* reduce each of the rows to get a lower triangle */	
-		for(i = 0; i < low->columns && i<low->rows; i++){
-			for(j = i + 1; j < low->rows; j++){
-				if(low->numbers[i][i] == 0){
-					for(l = i+1; l < low->rows; l++){
-						if(m->numbers[l][l]!=0){
-							row_swap(low, i, l);
-							break;
-						}
+	/* reduce each of the rows to get a lower triangle */
+	for(i = 0; i < low->columns && i<low->rows; i++){
+		for(j = i + 1; j < low->rows; j++){
+			if(low->numbers[i][i] == 0){
+				for(l = i+1; l < low->rows; l++){
+					if(m->numbers[l][l]!=0){
+						row_swap(low, i, l);
+						break;
 					}
-					continue;
 				}
-				factor = low->numbers[i][j]/(low->numbers[i][i]);
-				reduce(low, i, j, factor);
-			}
-		}
-		/* now finish the upper triangle  */
-		for(i = (low->rows>low->columns)?low->columns-1:low->rows-1; i > 0; i--){
-			for(j = i-1; j>=0; j--){
-				if(low->numbers[i][i] == 0)
-					continue;
-				if(j == -1)
-					break;
-				factor = low->numbers[i][j]/(low->numbers[i][i]);
-				reduce(low, i, j, factor);
-			}
-		}
-		/* scale everything to 1 */
-		for(i = 0; i < low->columns; i++){
-			if(low->numbers[i][i]==0)
 				continue;
-			factor = 1/(low->numbers[i][i]);
-			row_scalar_multiply(low, i, factor);
+			}
+			factor = low->numbers[i][j]/(low->numbers[i][i]);
+			reduce(low, i, j, factor);
 		}
+	}
+	/* now finish the upper triangle  */
+	for(i = (low->rows>low->columns)?low->columns-1:low->rows-1; i > 0; i--){
+		for(j = i-1; j>=0; j--){
+			if(low->numbers[i][i] == 0)
+				continue;
+			if(j == -1)
+				break;
+			factor = low->numbers[i][j]/(low->numbers[i][i]);
+			reduce(low, i, j, factor);
+		}
+	}
+	/* scale everything to 1 */
+	for(i = 0; i < low->columns; i++){
+		if(low->numbers[i][i]==0)
+			continue;
+		factor = 1/(low->numbers[i][i]);
+		row_scalar_multiply(low, i, factor);
 	}
 	return low;
 }
