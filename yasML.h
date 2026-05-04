@@ -193,11 +193,12 @@ Matrix *inversion(Matrix *m){
 		for(j = i + 1; j < (m)->rows; j++){
 			if((m)->numbers[i][i] == 0){
 				for(l=i+1; l < m->rows; l++){
-					if(m->numbers[l][l] != 0){
+					if(m->numbers[i][l] != 0){
 						row_swap(m, i, l);
+						row_swap(invert, i, l);
 						break;
 					}
-				}	
+				}
 				continue;
 			}
 			factor = (m)->numbers[i][j]/((m)->numbers[i][i]);
