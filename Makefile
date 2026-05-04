@@ -1,5 +1,5 @@
 CC				= gcc
-CFLAGS			= -g
+CFLAGS			= -g -fsanitize=address
 LIB_DIR			= ./lib
 DEPS			= yasML.h
 
@@ -55,7 +55,7 @@ row_swap_test: unity.o yasML.h $(TEST_DIR)/row_swap.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 solved_aug_matrix_test: unity.o yasML.h $(TEST_DIR)/solved_aug_matrix.c
-	$(CC) $(CFLAGS) -fsanitize=address -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
+	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 eigenvalues_test: unity.o yasML.h $(TEST_DIR)/eigenvalues.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
@@ -70,7 +70,7 @@ manual_entry_test: unity.o yasML.h $(TEST_DIR)/manual_entry.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 unity.o: lib/unity/src/unity.c
-	$(CC) -c $(LIB_DIR)/unity/src/unity.c $(INC_DIR)
+	$(CC) $(CFLAGS) -c $(LIB_DIR)/unity/src/unity.c $(INC_DIR)
 
 .PHONY: clean test
 
