@@ -190,54 +190,55 @@ int reduce(Matrix *m, int a, int b, float factor){
 	return SUCC;
 }
 
-/* matrix m will become the identity so the caller must save their matrix themselves  */
 Matrix *inversion(Matrix *m){
-	Matrix *invert;
+	Matrix *invert, *work;
 	unsigned int i, l;
 	int j;
 	double factor;
 	if(m == NULL)
 		return NULL;
-	if((m)->columns != (m)->rows)
+	if(m->columns != m->rows)
 		return NULL;
-	invert = identity((m)->rows);
+	work = clonemx(m);
+	invert = identity(work->rows);
 
-	/* reduce each of the rows to get a lower triangle */	
-	for(i = 0; i < (m)->columns; i++){
-		for(j = i + 1; j < (m)->rows; j++){
-			if((m)->numbers[i][i] == 0){
-				for(l=i+1; l < m->rows; l++){
-					if(m->numbers[i][l] != 0){
-						row_swap(m, i, l);
+	/* reduce each of the rows to get a lower triangle */
+	for(i = 0; i < work->columns; i++){
+		for(j = i + 1; j < work->rows; j++){
+			if(work->numbers[i][i] == 0){
+				for(l=i+1; l < work->rows; l++){
+					if(work->numbers[i][l] != 0){
+						row_swap(work, i, l);
 						row_swap(invert, i, l);
 						break;
 					}
 				}
 				continue;
 			}
-			factor = (m)->numbers[i][j]/((m)->numbers[i][i]);
+			factor = work->numbers[i][j]/(work->numbers[i][i]);
 			reduce(invert, i, j, factor);
-			reduce((m), i, j, factor);
+			reduce(work, i, j, factor);
 		}
 	}
 	/* now finish the upper triangle  */
-	for(i = (m)->columns - 1; i > 0; i--){
+	for(i = work->columns - 1; i > 0; i--){
 		for(j = i-1; j>=0; j--){
-			if((m)->numbers[i][i] == 0)
+			if(work->numbers[i][i] == 0)
 				continue;
-			factor = (m)->numbers[i][j]/((m)->numbers[i][i]);
+			factor = work->numbers[i][j]/(work->numbers[i][i]);
 			reduce(invert, i, j, factor);
-			reduce((m), i, j, factor);
+			reduce(work, i, j, factor);
 		}
 	}
 	/* scale everything to 1 */
-	for(i = 0; i < (m)->columns; i++){
-		if((m)->numbers[i][i]==0)
+	for(i = 0; i < work->columns; i++){
+		if(work->numbers[i][i] == 0)
 			continue;
-		factor = 1/((m)->numbers[i][i]);
+		factor = 1/(work->numbers[i][i]);
 		row_scalar_multiply(invert, i, factor);
-		row_scalar_multiply((m), i, factor);
+		row_scalar_multiply(work, i, factor);
 	}
+	destroy_matrix(work);
 	return invert;
 }
 
