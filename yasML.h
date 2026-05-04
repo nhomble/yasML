@@ -378,6 +378,7 @@ Matrix *gram_schmidt(Matrix *m){
 			ortho->numbers = realloc(ortho->numbers, sizeof(double *)*ortho->columns);
 			ortho->numbers[ortho->columns - 1] = ortho_vector;
 			vector_subtraction(ortho_vector, temp, m->rows);
+			free(temp);
 		}
 		return ortho;
 	}
