@@ -7,7 +7,7 @@ TEST_DIR		= ./tests
 TEST_INC_DIR	= -I./lib/unity/src
 TEST_LIBS		= -lm
 
-test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_schmidt_test projection_test inversion_test determinant_test row_swap_test solved_aug_matrix_test eigenvalues_test clonemx_test equals_test
+test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_schmidt_test projection_test inversion_test determinant_test row_swap_test solved_aug_matrix_test eigenvalues_test clonemx_test equals_test manual_entry_test
 	$(TEST_DIR)/multiply_test
 	$(TEST_DIR)/identity_test
 	$(TEST_DIR)/readme_test
@@ -22,6 +22,7 @@ test: multiply_test identity_test readme_test zero_vector_test reduce_test gram_
 	$(TEST_DIR)/eigenvalues_test
 	$(TEST_DIR)/clonemx_test
 	$(TEST_DIR)/equals_test
+	$(TEST_DIR)/manual_entry_test
 
 multiply_test: unity.o yasML.h $(TEST_DIR)/multiply.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
@@ -63,6 +64,9 @@ clonemx_test: unity.o yasML.h $(TEST_DIR)/clonemx.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 equals_test: unity.o yasML.h $(TEST_DIR)/equals.c
+	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
+
+manual_entry_test: unity.o yasML.h $(TEST_DIR)/manual_entry.c
 	$(CC) $(CFLAGS) -o $(TEST_DIR)/$@ $(filter-out %.h,$^) $(TEST_INC_DIR) $(TEST_LIBS)
 
 unity.o: lib/unity/src/unity.c

@@ -552,7 +552,7 @@ double *eigenvalues(Matrix *m){
 /* make your own matrix */
 void manual_entry(Matrix **m){
 	Matrix *temp;
-	int i, j, rows, cols;
+	int i, rows, cols;
 	double number;
 	char buffer[12];
 	printf("Rows | Columns\n");
@@ -567,13 +567,12 @@ void manual_entry(Matrix **m){
 	temp = constructor(rows, cols);
 	if(temp == NULL)
 		return;
-	i = 0; j = 0;
+	i = 0;
 	printf("start entering numbers from left to right, top to bottom\nand use either EOF to end input\n");
-	while(fgets(buffer, 6, stdin) != NULL){
+	while(i < rows*cols && fgets(buffer, 6, stdin) != NULL){
 		number = atof(buffer);
-		temp->numbers[i%cols][(int) floor(j/rows)] = number;
+		temp->numbers[i%cols][i/cols] = number;
 		i++;
-		j++;
 	}
 	*m = temp;
 }
