@@ -256,6 +256,8 @@ int equals(Matrix *m1, Matrix *m2){
 Matrix *clonemx(Matrix *m){
 	Matrix *copy;
 	unsigned int i, j;
+	if(m == NULL)
+		return NULL;
 	copy = constructor(m->rows, m->columns);
 	for(i = 0; i < m->columns; i++)
 		for(j = 0; j < m->rows; j++)
