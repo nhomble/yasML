@@ -141,8 +141,8 @@ int row_swap(Matrix *m, int a, int b){
 	unsigned int i;
 	if(m == NULL)
 		return FAIL;
-	if(m->rows <= a || m->rows <= b)
-		return FAIL;	
+	if(a < 0 || b < 0 || a >= m->rows || b >= m->rows)
+		return FAIL;
 	for(i = 0; i < m->columns; i++){
 		temp = m->numbers[i][a];
 		m->numbers[i][a] = m->numbers[i][b];
