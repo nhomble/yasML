@@ -474,7 +474,8 @@ Matrix *orthonormal_basis(Matrix *m){
 Matrix *solved_aug_matrix(Matrix *m){
 	Matrix *low;
 	double factor;
-	unsigned int i, j, l;
+	unsigned int i, l;
+	int j;
 	if(m == NULL)
 		return NULL;
 	low = clonemx(m);
@@ -499,8 +500,6 @@ Matrix *solved_aug_matrix(Matrix *m){
 		for(j = i-1; j>=0; j--){
 			if(low->numbers[i][i] == 0)
 				continue;
-			if(j == -1)
-				break;
 			factor = low->numbers[i][j]/(low->numbers[i][i]);
 			reduce(low, i, j, factor);
 		}

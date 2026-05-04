@@ -63,6 +63,22 @@ void test_solved_aug_2x2_swap(){
     destroy_matrix(r);
 }
 
+/* singular triggers zero pivot in upper-triangle phase → unsigned wrap */
+void test_solved_aug_singular_terminates(){
+    Matrix *m, *r;
+    signal(SIGALRM, timeout_handler);
+    alarm(3);
+    m = constructor(2, 2);
+    /* row-major: [[1,0],[1,0]] — rank 1, singular */
+    m->numbers[0][0] = 1; m->numbers[0][1] = 1;
+    m->numbers[1][0] = 0; m->numbers[1][1] = 0;
+    r = solved_aug_matrix(m);
+    alarm(0);
+    (void)r;
+    destroy_matrix(m);
+    if(r) destroy_matrix(r);
+}
+
 /* 4x4 diag → identity */
 void test_solved_aug_4x4_diag(){
     Matrix *m = constructor(4, 4);
@@ -87,6 +103,7 @@ int main(void){
     RUN_TEST(test_solved_aug_2x2_diag);
     RUN_TEST(test_solved_aug_3x3_upper_triangular);
     RUN_TEST(test_solved_aug_2x2_swap);
+    RUN_TEST(test_solved_aug_singular_terminates);
     RUN_TEST(test_solved_aug_4x4_diag);
     return UNITY_END();
 }
