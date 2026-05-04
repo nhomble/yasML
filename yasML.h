@@ -81,18 +81,32 @@ int zero_vector(Matrix *m){
 
 /* make a zero matrix of given dimensions */
 Matrix *constructor(int r, int c){
-	unsigned int i;
+	unsigned int i, k;
 	Matrix *m;
 	if(r <= 0 || c <= 0){
 		perror("Give me positive values for dimensions genius");
 		return NULL;
 	}
 	m = malloc(sizeof(Matrix));
+	if(m == NULL)
+		return NULL;
 	m->rows = r;
 	m->columns = c;
 	m->numbers = malloc(sizeof(double *)*c);
-	for(i = 0; i < c; i++)
+	if(m->numbers == NULL){
+		free(m);
+		return NULL;
+	}
+	for(i = 0; i < c; i++){
 		m->numbers[i] = calloc(sizeof(double), r);
+		if(m->numbers[i] == NULL){
+			for(k = 0; k < i; k++)
+				free(m->numbers[k]);
+			free(m->numbers);
+			free(m);
+			return NULL;
+		}
+	}
 	return m;
 }
 
