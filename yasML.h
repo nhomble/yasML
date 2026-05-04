@@ -479,7 +479,7 @@ Matrix *solved_aug_matrix(Matrix *m){
 		for(j = i + 1; j < low->rows; j++){
 			if(low->numbers[i][i] == 0){
 				for(l = i+1; l < low->rows; l++){
-					if(m->numbers[l][l]!=0){
+					if(low->numbers[i][l]!=0){
 						row_swap(low, i, l);
 						break;
 					}

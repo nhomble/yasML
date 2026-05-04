@@ -1,5 +1,12 @@
 #include "unity.h"
 #include "../yasML.h"
+#include <signal.h>
+#include <unistd.h>
+
+static void timeout_handler(int sig){
+    (void)sig;
+    _exit(99);
+}
 
 static void assert_identity(Matrix *r, int n){
     int i, j;
@@ -39,6 +46,23 @@ void test_solved_aug_3x3_upper_triangular(){
     destroy_matrix(r);
 }
 
+/* swap-required at pivot 0: [[0,1],[1,0]] → identity
+   pre-fix this hung (missed swap → upper-phase loop never finds nonzero pivot) */
+void test_solved_aug_2x2_swap(){
+    Matrix *m = constructor(2, 2);
+    Matrix *r;
+    signal(SIGALRM, timeout_handler);
+    alarm(3);
+    m->numbers[0][0] = 0; m->numbers[0][1] = 1;
+    m->numbers[1][0] = 1; m->numbers[1][1] = 0;
+    r = solved_aug_matrix(m);
+    alarm(0);
+    TEST_ASSERT_NOT_NULL(r);
+    assert_identity(r, 2);
+    destroy_matrix(m);
+    destroy_matrix(r);
+}
+
 /* 4x4 diag → identity */
 void test_solved_aug_4x4_diag(){
     Matrix *m = constructor(4, 4);
@@ -62,6 +86,7 @@ int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_solved_aug_2x2_diag);
     RUN_TEST(test_solved_aug_3x3_upper_triangular);
+    RUN_TEST(test_solved_aug_2x2_swap);
     RUN_TEST(test_solved_aug_4x4_diag);
     return UNITY_END();
 }
