@@ -437,9 +437,9 @@ double determinant(Matrix *m){
 	int sign;
 	double det, factor;
 	if(m == NULL)
-		return -1;
+		return NAN;
 	if(m->columns != m->rows)
-		return -1;
+		return NAN;
 	copy = clonemx(m);
 	det = 1;
 	sign = 1;

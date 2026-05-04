@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "../yasML.h"
+#include <math.h>
 
 void test_det_identity(){
     Matrix *m = identity(3);
@@ -74,6 +75,27 @@ void test_det_singular_no_pivot(){
     destroy_matrix(m);
 }
 
+/* error sentinel must be distinguishable from valid -1 */
+void test_det_null_is_nan(){
+    TEST_ASSERT_TRUE(isnan(determinant(NULL)));
+}
+
+void test_det_non_square_is_nan(){
+    Matrix *m = constructor(2, 3);
+    TEST_ASSERT_TRUE(isnan(determinant(m)));
+    destroy_matrix(m);
+}
+
+/* a valid determinant of -1 must NOT collide with the error sentinel */
+void test_det_negative_one_valid(){
+    Matrix *m = constructor(2, 2);
+    /* [[0,1],[1,0]] det = -1 */
+    m->numbers[0][0] = 0; m->numbers[0][1] = 1;
+    m->numbers[1][0] = 1; m->numbers[1][1] = 0;
+    TEST_ASSERT_FALSE(isnan(determinant(m)));
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
@@ -87,5 +109,8 @@ int main(void){
     RUN_TEST(test_det_3x3_mid_swap);
     RUN_TEST(test_det_double_swap);
     RUN_TEST(test_det_singular_no_pivot);
+    RUN_TEST(test_det_null_is_nan);
+    RUN_TEST(test_det_non_square_is_nan);
+    RUN_TEST(test_det_negative_one_valid);
     return UNITY_END();
 }
