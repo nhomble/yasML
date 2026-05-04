@@ -18,6 +18,10 @@ void identity_multiply(void){
   print(res);
 
   TEST_ASSERT_EQUAL(1, equals(m1, res));
+
+  destroy_matrix(i1);
+  destroy_matrix(m1);
+  destroy_matrix(res);
 }
 
 int main(void){

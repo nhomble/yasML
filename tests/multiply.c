@@ -27,8 +27,13 @@ void regression_gh_5(void){
         }
     }
     Matrix *res = multiply(m2, m1);
-    
+
     TEST_ASSERT_EQUAL(1, equals(expected, res));
+
+    destroy_matrix(m1);
+    destroy_matrix(m2);
+    destroy_matrix(expected);
+    destroy_matrix(res);
 }
 
 int main(void){

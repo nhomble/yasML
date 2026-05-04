@@ -9,8 +9,8 @@ void test_identity_equality(){
 
     TEST_ASSERT_EQUAL(1, equals(m1, m2));
 
-    free(m1);
-    free(m2);
+    destroy_matrix(m1);
+    destroy_matrix(m2);
 }
 
 void test_multiply_identity() {
@@ -22,9 +22,9 @@ void test_multiply_identity() {
 
     TEST_ASSERT_EQUAL(1, equals(m1, m3));
 
-    free(m1);
-    free(m2);
-    free(m3);
+    destroy_matrix(m1);
+    destroy_matrix(m2);
+    destroy_matrix(m3);
 }
 
 void test_identity_zero(){
