@@ -96,6 +96,16 @@ void test_det_negative_one_valid(){
     destroy_matrix(m);
 }
 
+/* float-precision factor previously left ~3e-8 residue on an exactly
+   singular matrix; double factor must reduce to a real zero pivot */
+void test_det_singular_tight_tolerance(){
+    Matrix *m = constructor(2, 2);
+    m->numbers[0][0] = 1; m->numbers[0][1] = 1.0/3.0;
+    m->numbers[1][0] = 3; m->numbers[1][1] = 1;
+    TEST_ASSERT_DOUBLE_WITHIN(1e-12, 0.0, determinant(m));
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
@@ -112,5 +122,6 @@ int main(void){
     RUN_TEST(test_det_null_is_nan);
     RUN_TEST(test_det_non_square_is_nan);
     RUN_TEST(test_det_negative_one_valid);
+    RUN_TEST(test_det_singular_tight_tolerance);
     return UNITY_END();
 }

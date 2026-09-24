@@ -38,8 +38,8 @@ Matrix *constructor(int r, int c);
 int destroy_matrix(Matrix *m);
 int print(Matrix *m);
 int row_swap(Matrix *m, int a, int b);
-int scalar_multiply(Matrix *m, float f);
-int reduce(Matrix *m, int a, int b, float factor);
+int scalar_multiply(Matrix *m, double f);
+int reduce(Matrix *m, int a, int b, double factor);
 int equals(Matrix *m1, Matrix *m2);
 /* we shouldn`t use clone keyword because it`s extensively used in c++ */
 Matrix *clonemx(Matrix *m);
@@ -56,7 +56,7 @@ Matrix *solved_aug_matrix(Matrix *);
 void manual_entry(Matrix **m);
 double *eigenvalues(Matrix *m);
 
-static int row_scalar_multiply(Matrix *m, int row, float factor);
+static int row_scalar_multiply(Matrix *m, int row, double factor);
 static double vector_multiply(double *col, double *row, int length);
 static void vector_addition(double *v1, double *v2, int length);
 static void scalar_vector_multiplication(double factor, double *vector, int length);
@@ -165,7 +165,7 @@ int row_swap(Matrix *m, int a, int b){
 	return SUCC;	
 }
 
-int scalar_multiply(Matrix *m, float scalar){
+int scalar_multiply(Matrix *m, double scalar){
 	int i, j;
 	if(m == NULL)
 		return FAIL;
@@ -177,7 +177,7 @@ int scalar_multiply(Matrix *m, float scalar){
 }
 
 /* reduce row b by factor*a  */
-int reduce(Matrix *m, int a, int b, float factor){
+int reduce(Matrix *m, int a, int b, double factor){
 	int i;
 	if(m == NULL)
 		return FAIL;
@@ -242,7 +242,7 @@ Matrix *inversion(Matrix *m){
 	return invert;
 }
 
-static int row_scalar_multiply(Matrix *m, int row, float factor){
+static int row_scalar_multiply(Matrix *m, int row, double factor){
 	int i;
 	if(m == NULL)
 		return FAIL;
