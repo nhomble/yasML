@@ -1,5 +1,5 @@
 CC				= gcc
-CFLAGS			= -g -fsanitize=address
+CFLAGS			= -g -fsanitize=address -DUNITY_INCLUDE_DOUBLE
 LIB_DIR			= ./lib
 DEPS			= yasML.h
 
