@@ -532,36 +532,87 @@ Matrix *solved_aug_matrix(Matrix *m){
 	return low;
 }
 
-/* Return an array of all of the possible eigenvalues */
+/* Return an array of all of the possible eigenvalues, via unshifted QR
+   iteration: A_0 = m, A_{k+1} = R_k Q_k where A_k = Q_k R_k, converges
+   (for matrices with real, distinct-magnitude eigenvalues) to a matrix
+   whose diagonal holds the eigenvalues. Row reduction, used previously,
+   does not preserve eigenvalues and was simply wrong. */
 double *eigenvalues(Matrix *m){
-	double *values, factor;
-	Matrix *red;
-	unsigned int i, j, l;
+	double *values;
+	Matrix *cur, *q, *qt, *r, *next;
+	unsigned int i, j, iter;
+	double norm, off_diag;
 	if(m == NULL)
 		return NULL;
 	if(m->rows != m->columns)
 		return NULL;
 	values = malloc(sizeof(double)*m->rows);
-	red = clonemx(m);
-	/* reduce each of the rows to get a lower triangle */
-	for(i = 0; i < red->columns; i++){
-		for(j = i + 1; j < red->rows; j++){
-			if(red->numbers[i][i] == 0){
-				for(l = i+1; l < red->rows; l++){
-					if(red->numbers[i][l] != 0){
-						row_swap(red, i, l);
-						break;
-					}
-				}
+	if(values == NULL)
+		return NULL;
+	cur = clonemx(m);
+	if(cur == NULL){
+		free(values);
+		return NULL;
+	}
+	for(iter = 0; iter < 2000; iter++){
+		q = gram_schmidt(cur);
+		if(q == NULL)
+			break;
+		for(i = 0; i < q->columns; i++){
+			norm = 0;
+			for(j = 0; j < q->rows; j++)
+				norm += q->numbers[i][j]*q->numbers[i][j];
+			norm = sqrt(norm);
+			if(norm < 1e-12)
 				continue;
+			for(j = 0; j < q->rows; j++)
+				q->numbers[i][j] /= norm;
+		}
+		qt = transpose(q);
+		r = multiply(qt, cur);
+		next = multiply(r, q);
+		destroy_matrix(q);
+		destroy_matrix(qt);
+		destroy_matrix(r);
+		destroy_matrix(cur);
+		cur = next;
+
+		off_diag = 0;
+		for(i = 0; i < cur->columns; i++)
+			for(j = i + 1; j < cur->rows; j++)
+				off_diag += cur->numbers[i][j]*cur->numbers[i][j];
+		if(off_diag < 1e-18)
+			break;
+	}
+	/* unshifted QR stalls on 2x2 blocks whose eigenvalues share a
+	   magnitude (e.g. a real pair of opposite sign); solve any block
+	   left with a nonzero subdiagonal directly via the quadratic
+	   formula instead of reading off a diagonal that never converged */
+	for(i = 0; i < cur->columns; ){
+		if(i + 1 < cur->columns && fabs(cur->numbers[i][i + 1]) > 1e-6){
+			double a11 = cur->numbers[i][i];
+			double a12 = cur->numbers[i + 1][i];
+			double a21 = cur->numbers[i][i + 1];
+			double a22 = cur->numbers[i + 1][i + 1];
+			double trace = a11 + a22;
+			double det = a11*a22 - a12*a21;
+			double disc = trace*trace - 4*det;
+			if(disc >= 0){
+				double root = sqrt(disc);
+				values[i] = (trace + root)/2;
+				values[i + 1] = (trace - root)/2;
+			} else {
+				/* genuinely complex-conjugate pair: this API has no
+				   way to represent that, so report the real part */
+				values[i] = values[i + 1] = trace/2;
 			}
-			factor = red->numbers[i][j]/(red->numbers[i][i]);
-			reduce(red, i, j, factor);
+			i += 2;
+		} else {
+			values[i] = cur->numbers[i][i];
+			i += 1;
 		}
 	}
-	for(i = 0; i < red->columns; i++)
-		values[i] = red->numbers[i][i];
-	destroy_matrix(red);
+	destroy_matrix(cur);
 	return values;
 }
 

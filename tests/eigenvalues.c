@@ -15,8 +15,8 @@ void test_eigenvalues_diag(){
     destroy_matrix(m);
 }
 
-/* swap-required: [[0,1],[1,0]]. Post-swap REF = identity, diagonal = [1,1].
-   Pre-fix the pivot search misses the swap and returns [0,0]. */
+/* [[0,1],[1,0]]: true eigenvalues are +1 and -1 (equal magnitude, the
+   classic case unshifted QR stalls on without 2x2 block deflation) */
 void test_eigenvalues_swap_required(){
     Matrix *m = constructor(2, 2);
     double *v;
@@ -25,7 +25,7 @@ void test_eigenvalues_swap_required(){
     v = eigenvalues(m);
     TEST_ASSERT_NOT_NULL(v);
     TEST_ASSERT_EQUAL_FLOAT(1.0f, (float)v[0]);
-    TEST_ASSERT_EQUAL_FLOAT(1.0f, (float)v[1]);
+    TEST_ASSERT_EQUAL_FLOAT(-1.0f, (float)v[1]);
     free(v);
     destroy_matrix(m);
 }
@@ -47,8 +47,8 @@ void test_eigenvalues_3x3_upper_triangular(){
     destroy_matrix(m);
 }
 
-/* 3x3 needing lower-triangle reduction
-   row-major: [[2,4,0],[1,3,0],[0,0,5]], REF diag = [2, 1, 5] */
+/* row-major: [[2,1,0],[4,3,0],[0,0,5]]. Block-diagonal: the 2x2 block
+   [[2,1],[4,3]] has eigenvalues (5+-sqrt(17))/2, decoupled from the 5. */
 void test_eigenvalues_3x3_needs_reduction(){
     Matrix *m = constructor(3, 3);
     double *v;
@@ -57,14 +57,15 @@ void test_eigenvalues_3x3_needs_reduction(){
     m->numbers[2][0] = 0; m->numbers[2][1] = 0; m->numbers[2][2] = 5;
     v = eigenvalues(m);
     TEST_ASSERT_NOT_NULL(v);
-    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 2.0f, (float)v[0]);
-    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 1.0f, (float)v[1]);
-    TEST_ASSERT_FLOAT_WITHIN(1e-5f, 5.0f, (float)v[2]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4f, 4.56155f, (float)v[0]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4f, 0.43845f, (float)v[1]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4f, 5.0f, (float)v[2]);
     free(v);
     destroy_matrix(m);
 }
 
-/* singular: column-0 all-zero. Pivot search finds nothing. REF diag[0] = 0 */
+/* row-major: [[0,1],[0,1]], rank 1 and singular: true eigenvalues are
+   0 and 1 (trace = 1, det = 0), which this case already gave. */
 void test_eigenvalues_singular(){
     Matrix *m = constructor(2, 2);
     double *v;
@@ -72,8 +73,8 @@ void test_eigenvalues_singular(){
     m->numbers[1][0] = 1; m->numbers[1][1] = 1;
     v = eigenvalues(m);
     TEST_ASSERT_NOT_NULL(v);
-    TEST_ASSERT_EQUAL_FLOAT(0.0f, (float)v[0]);
-    TEST_ASSERT_EQUAL_FLOAT(1.0f, (float)v[1]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4f, 0.0f, (float)v[0]);
+    TEST_ASSERT_FLOAT_WITHIN(1e-4f, 1.0f, (float)v[1]);
     free(v);
     destroy_matrix(m);
 }
