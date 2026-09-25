@@ -88,7 +88,7 @@ static inline Matrix *constructor(int r, int c){
 	unsigned int i, k;
 	Matrix *m;
 	if(r <= 0 || c <= 0){
-		perror("Give me positive values for dimensions genius");
+		fprintf(stderr, "Give me positive values for dimensions genius\n");
 		return NULL;
 	}
 	m = malloc(sizeof(Matrix));
@@ -102,7 +102,7 @@ static inline Matrix *constructor(int r, int c){
 		return NULL;
 	}
 	for(i = 0; i < c; i++){
-		m->numbers[i] = calloc(sizeof(double), r);
+		m->numbers[i] = calloc(r, sizeof(double));
 		if(m->numbers[i] == NULL){
 			for(k = 0; k < i; k++)
 				free(m->numbers[k]);
@@ -456,7 +456,7 @@ static inline double *projection(Matrix *m, double *v, int length){
 		return NULL;
 	if(m->rows != length)
 		return NULL;
-	sum = calloc(sizeof(double), m->rows);
+	sum = calloc(m->rows, sizeof(double));
 	if(sum == NULL)
 		return NULL;
 	copy = malloc(sizeof(double)*m->rows);
@@ -707,7 +707,7 @@ static inline void manual_entry(Matrix **m){
 		break;
 	}
 	if(rows == -1 || cols == -1)
-		perror("bad input");
+		fprintf(stderr, "bad input\n");
 	temp = constructor(rows, cols);
 	if(temp == NULL)
 		return;
