@@ -62,11 +62,15 @@ static inline void vector_addition(double *v1, double *v2, int length);
 static inline void scalar_vector_multiplication(double factor, double *vector, int length);
 static inline void vector_subtraction(double *v1, double *v2, int length);
 
-/* return success if there is at least one zero vector in the matrix */
+/* boolean predicate: 1 if there is at least one zero vector in the
+   matrix, 0 otherwise (including NULL input). This intentionally
+   returns a plain 0/1, not SUCC/FAIL: FAIL is -1, which is truthy in
+   C, so `if(zero_vector(m))` and `if(!zero_vector(m))` were always
+   wrong when FAIL meant "false". */
 static inline int zero_vector(Matrix *m){
 	unsigned int i, j, counter;
 	if(m == NULL)
-		return FAIL;
+		return 0;
 	for(i = 0; i < m->columns; i++){
 		counter = 0;
 		for(j = 0; j < m->rows; j++){
@@ -74,9 +78,9 @@ static inline int zero_vector(Matrix *m){
 				counter++;
 		}
 		if(counter == m->rows)
-			return SUCC;
+			return 1;
 	}
-	return FAIL;
+	return 0;
 }
 
 /* make a zero matrix of given dimensions */
@@ -259,19 +263,24 @@ static inline int row_scalar_multiply(Matrix *m, int row, double factor){
 	return SUCC;
 }
 
+/* boolean predicate: 1 if m1 and m2 are the same shape and equal
+   within tolerance, 0 otherwise (including NULL input). Returns a
+   plain 0/1, not SUCC/FAIL, for the same reason as zero_vector: FAIL
+   is -1, which is truthy, so `if(equals(a, b))` would always take
+   the true branch regardless of the actual comparison. */
 static inline int equals(Matrix *m1, Matrix *m2){
 	unsigned int i, j;
 	if(m1 == NULL || m2 == NULL)
-		return FAIL;
+		return 0;
 	if(m1->columns != m2->columns || m1->rows != m2->rows)
-		return FAIL;
+		return 0;
 	for(i = 0; i < m1->columns; i++){
 		for(j = 0; j < m1->rows; j++){
 			if(fabs(m1->numbers[i][j] - m2->numbers[i][j]) > 1e-9)
-				return FAIL;
+				return 0;
 		}
 	}
-	return SUCC;
+	return 1;
 }
 
 static inline Matrix *clonemx(Matrix *m){

@@ -14,13 +14,13 @@ void test_equals_exact(){
     destroy_matrix(b);
 }
 
-/* matrices that differ → FAIL */
+/* matrices that differ → 0 (false) */
 void test_equals_different(){
     Matrix *a = constructor(1, 1);
     Matrix *b = constructor(1, 1);
     a->numbers[0][0] = 1.0;
     b->numbers[0][0] = 2.0;
-    TEST_ASSERT_EQUAL(FAIL, equals(a, b));
+    TEST_ASSERT_EQUAL(0, equals(a, b));
     destroy_matrix(a);
     destroy_matrix(b);
 }
@@ -36,22 +36,35 @@ void test_equals_fp_noise(){
     destroy_matrix(b);
 }
 
-/* dimension mismatch → FAIL */
+/* dimension mismatch → 0 (false) */
 void test_equals_dim_mismatch(){
     Matrix *a = constructor(2, 2);
     Matrix *b = constructor(2, 3);
-    TEST_ASSERT_EQUAL(FAIL, equals(a, b));
+    TEST_ASSERT_EQUAL(0, equals(a, b));
     destroy_matrix(a);
     destroy_matrix(b);
 }
 
-/* NULL → FAIL */
+/* NULL → 0 (false) */
 void test_equals_null(){
     Matrix *a = constructor(2, 2);
-    TEST_ASSERT_EQUAL(FAIL, equals(NULL, a));
-    TEST_ASSERT_EQUAL(FAIL, equals(a, NULL));
-    TEST_ASSERT_EQUAL(FAIL, equals(NULL, NULL));
+    TEST_ASSERT_EQUAL(0, equals(NULL, a));
+    TEST_ASSERT_EQUAL(0, equals(a, NULL));
+    TEST_ASSERT_EQUAL(0, equals(NULL, NULL));
     destroy_matrix(a);
+}
+
+/* FAIL is -1, which is truthy in C: equals() must return a plain 0,
+   not FAIL, for "not equal", or this idiom always takes the if-branch */
+void test_equals_if_idiom(){
+    Matrix *a = constructor(1, 1);
+    Matrix *b = constructor(1, 1);
+    a->numbers[0][0] = 1.0;
+    b->numbers[0][0] = 2.0;
+    if(equals(a, b))
+        TEST_FAIL_MESSAGE("if(equals(a, b)) took the true branch for unequal matrices");
+    destroy_matrix(a);
+    destroy_matrix(b);
 }
 
 void setUp(void){}
@@ -64,5 +77,6 @@ int main(void){
     RUN_TEST(test_equals_fp_noise);
     RUN_TEST(test_equals_dim_mismatch);
     RUN_TEST(test_equals_null);
+    RUN_TEST(test_equals_if_idiom);
     return UNITY_END();
 }

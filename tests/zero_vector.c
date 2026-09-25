@@ -30,7 +30,7 @@ void test_zero_vector_none(){
     m->numbers[0][1] = 2;
     m->numbers[1][0] = 3;
     m->numbers[1][1] = 4;
-    TEST_ASSERT_EQUAL(FAIL, zero_vector(m));
+    TEST_ASSERT_EQUAL(0, zero_vector(m));
     destroy_matrix(m);
 }
 
@@ -45,6 +45,19 @@ void test_zero_vector_fp_noise(){
     destroy_matrix(m);
 }
 
+/* FAIL is -1, which is truthy in C: zero_vector() must return a plain
+   0 for "no zero column", or this idiom always takes the if-branch */
+void test_zero_vector_if_idiom(){
+    Matrix *m = constructor(2, 2);
+    m->numbers[0][0] = 1;
+    m->numbers[0][1] = 2;
+    m->numbers[1][0] = 3;
+    m->numbers[1][1] = 4;
+    if(zero_vector(m))
+        TEST_FAIL_MESSAGE("if(zero_vector(m)) took the true branch with no zero column");
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
@@ -54,5 +67,6 @@ int main(void){
     RUN_TEST(test_zero_vector_4x4);
     RUN_TEST(test_zero_vector_none);
     RUN_TEST(test_zero_vector_fp_noise);
+    RUN_TEST(test_zero_vector_if_idiom);
     return UNITY_END();
 }
