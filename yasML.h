@@ -357,39 +357,49 @@ static inline int subtract(Matrix *m1, Matrix *m2){
 }
 
 /* change m into an orthogonal matrix  */
+/* build an orthogonal basis for the column space of m. A column that
+   turns out to be a linear combination of the ones already kept (its
+   remainder after projecting out those directions is ~0) is dropped
+   instead of being appended as a degenerate zero vector, which is
+   what previously produced NaNs downstream in orthonormal_basis. */
 static inline Matrix *gram_schmidt(Matrix *m){
 	Matrix *ortho;
 	double *ortho_vector, *temp;
 	unsigned int i, j;
+	double norm_sq;
 	if(m == NULL)
 		return NULL;
-	if(m->rows == m->columns || zero_vector(m) != 1){
-		/* create my empy matrix to have new orthogonal vector be added to */
-		ortho = constructor(m->rows, 1);
-		/* initialize with the first vector */
-		free(ortho->numbers[0]);
+	if(zero_vector(m) == 1)
+		return NULL;
+
+	ortho = constructor(m->rows, 1);
+	free(ortho->numbers[0]);
+	ortho_vector = malloc(sizeof(double)*m->rows);
+	for(j = 0; j < m->rows; j++)
+		ortho_vector[j] = m->numbers[0][j];
+	ortho->numbers[0] = ortho_vector;
+
+	for(i = 1; i < m->columns; i++){
 		ortho_vector = malloc(sizeof(double)*m->rows);
-		for(i = 0; i < m->rows; i++)
-			ortho_vector[i] = m->numbers[0][i];
-		ortho->numbers[0] = ortho_vector;	
-		/* now loop and go through the gs system */
-		for(i = 1; i < m->columns; i++){
-			/* first initialize to the regular vector */
-			ortho_vector = malloc(sizeof(double)*m->rows);
-			for(j = 0; j < m->rows; j++)
-				ortho_vector[j] = m->numbers[i][j];
-			/* get the subtracting factor */
-			temp = projection(ortho, ortho_vector, m->rows);
-			/* expand the matrix */
-			ortho->columns++;
-			ortho->numbers = realloc(ortho->numbers, sizeof(double *)*ortho->columns);
-			ortho->numbers[ortho->columns - 1] = ortho_vector;
-			vector_subtraction(ortho_vector, temp, m->rows);
-			free(temp);
+		for(j = 0; j < m->rows; j++)
+			ortho_vector[j] = m->numbers[i][j];
+		temp = projection(ortho, ortho_vector, m->rows);
+		vector_subtraction(ortho_vector, temp, m->rows);
+		free(temp);
+
+		norm_sq = 0;
+		for(j = 0; j < m->rows; j++)
+			norm_sq += ortho_vector[j]*ortho_vector[j];
+		if(norm_sq < 1e-18){
+			free(ortho_vector);
+			continue;
 		}
-		return ortho;
+
+		ortho->columns++;
+		ortho->numbers = realloc(ortho->numbers, sizeof(double *)*ortho->columns);
+		ortho->numbers[ortho->columns - 1] = ortho_vector;
 	}
-	return NULL;
+	return ortho;
 }
 
 static inline double *projection(Matrix *m, double *v, int length){
@@ -484,12 +494,16 @@ static inline Matrix *orthonormal_basis(Matrix *m){
 	if(m == NULL)
 		return NULL;
 	orthog = gram_schmidt(m);
-	for(i = 0; i < m->columns; i++){
+	if(orthog == NULL)
+		return NULL;
+	/* gram_schmidt drops any linearly dependent column, so iterate
+	   its own column count, not m's */
+	for(i = 0; i < orthog->columns; i++){
 		factor = 0;
-		for(j = 0; j < m->rows; j++)
+		for(j = 0; j < orthog->rows; j++)
 			factor += orthog->numbers[i][j]*orthog->numbers[i][j];
 		factor = sqrt(factor);
-		for(j = 0; j < m->rows; j++)
+		for(j = 0; j < orthog->rows; j++)
 			orthog->numbers[i][j] /= factor;
 	}
 	return orthog;
