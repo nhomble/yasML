@@ -192,9 +192,9 @@ int reduce(Matrix *m, int a, int b, double factor){
 
 Matrix *inversion(Matrix *m){
 	Matrix *invert, *work;
-	unsigned int i, l;
+	unsigned int i, l, pivot_row;
 	int j;
-	double factor;
+	double factor, max_val;
 	if(m == NULL)
 		return NULL;
 	if(m->columns != m->rows)
@@ -202,19 +202,29 @@ Matrix *inversion(Matrix *m){
 	work = clonemx(m);
 	invert = identity(work->rows);
 
-	/* reduce each of the rows to get a lower triangle */
+	/* reduce each of the rows to get a lower triangle, picking the
+	   largest-magnitude candidate in the column as pivot (partial
+	   pivoting) instead of only swapping on an exact zero */
 	for(i = 0; i < work->columns; i++){
-		for(j = i + 1; j < work->rows; j++){
-			if(work->numbers[i][i] == 0){
-				for(l=i+1; l < work->rows; l++){
-					if(work->numbers[i][l] != 0){
-						row_swap(work, i, l);
-						row_swap(invert, i, l);
-						break;
-					}
-				}
-				continue;
+		pivot_row = i;
+		max_val = fabs(work->numbers[i][i]);
+		for(l = i + 1; l < work->rows; l++){
+			if(fabs(work->numbers[i][l]) > max_val){
+				max_val = fabs(work->numbers[i][l]);
+				pivot_row = l;
 			}
+		}
+		if(max_val < 1e-12){
+			/* no usable pivot: m is singular, there is no inverse */
+			destroy_matrix(work);
+			destroy_matrix(invert);
+			return NULL;
+		}
+		if(pivot_row != i){
+			row_swap(work, i, pivot_row);
+			row_swap(invert, i, pivot_row);
+		}
+		for(j = i + 1; j < work->rows; j++){
 			factor = work->numbers[i][j]/(work->numbers[i][i]);
 			reduce(invert, i, j, factor);
 			reduce(work, i, j, factor);
@@ -223,8 +233,6 @@ Matrix *inversion(Matrix *m){
 	/* now finish the upper triangle  */
 	for(i = work->columns - 1; i > 0; i--){
 		for(j = i-1; j>=0; j--){
-			if(work->numbers[i][i] == 0)
-				continue;
 			factor = work->numbers[i][j]/(work->numbers[i][i]);
 			reduce(invert, i, j, factor);
 			reduce(work, i, j, factor);
@@ -232,8 +240,6 @@ Matrix *inversion(Matrix *m){
 	}
 	/* scale everything to 1 */
 	for(i = 0; i < work->columns; i++){
-		if(work->numbers[i][i] == 0)
-			continue;
 		factor = 1/(work->numbers[i][i]);
 		row_scalar_multiply(invert, i, factor);
 		row_scalar_multiply(work, i, factor);

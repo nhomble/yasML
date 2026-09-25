@@ -138,6 +138,16 @@ void test_inversion_3x3_swap(){
     destroy_matrix(m);
 }
 
+/* singular (rank 1, second row is 2x the first): must return NULL,
+   not a garbage "inverse" */
+void test_inversion_singular_returns_null(){
+    Matrix *m = constructor(2, 2);
+    m->numbers[0][0] = 1; m->numbers[0][1] = 2;
+    m->numbers[1][0] = 2; m->numbers[1][1] = 4;
+    TEST_ASSERT_NULL(inversion(m));
+    destroy_matrix(m);
+}
+
 void setUp(void){}
 void tearDown(void){}
 
@@ -151,5 +161,6 @@ int main(void){
     RUN_TEST(test_inversion_4x4_diag);
     RUN_TEST(test_inversion_4x4_generic);
     RUN_TEST(test_inversion_3x3_swap);
+    RUN_TEST(test_inversion_singular_returns_null);
     return UNITY_END();
 }
