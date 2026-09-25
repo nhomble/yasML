@@ -204,7 +204,13 @@ static inline Matrix *inversion(Matrix *m){
 	if(m->columns != m->rows)
 		return NULL;
 	work = clonemx(m);
+	if(work == NULL)
+		return NULL;
 	invert = identity(work->rows);
+	if(invert == NULL){
+		destroy_matrix(work);
+		return NULL;
+	}
 
 	/* reduce each of the rows to get a lower triangle, picking the
 	   largest-magnitude candidate in the column as pivot (partial
@@ -289,6 +295,8 @@ static inline Matrix *clonemx(Matrix *m){
 	if(m == NULL)
 		return NULL;
 	copy = constructor(m->rows, m->columns);
+	if(copy == NULL)
+		return NULL;
 	for(i = 0; i < m->columns; i++)
 		for(j = 0; j < m->rows; j++)
 			copy->numbers[i][j] = m->numbers[i][j];
@@ -301,6 +309,8 @@ static inline Matrix *transpose(Matrix *m){
 	if(m == NULL)
 		return NULL;
 	trans = constructor(m->columns, m->rows);
+	if(trans == NULL)
+		return NULL;
 	for(i = 0; i < trans->columns; i++){
 		for(j = 0; j < trans->rows; j++)
 			trans->numbers[i][j] = m->numbers[j][i];
@@ -317,7 +327,13 @@ static inline Matrix *multiply(Matrix *m1, Matrix *m2){
 	if(m1->columns != m2->rows)
 		return NULL;
 	trans = transpose(m1);
+	if(trans == NULL)
+		return NULL;
 	product = constructor(m1->rows, m2->columns);
+	if(product == NULL){
+		destroy_matrix(trans);
+		return NULL;
+	}
 	for(i = 0; i < product->columns; i++){
 		for(j = 0; j < product->rows; j++){
 			product->numbers[i][j] = vector_multiply(trans->numbers[j], m2->numbers[i], m2->rows);
@@ -382,17 +398,33 @@ static inline Matrix *gram_schmidt(Matrix *m){
 		return NULL;
 
 	ortho = constructor(m->rows, 1);
-	free(ortho->numbers[0]);
+	if(ortho == NULL)
+		return NULL;
 	ortho_vector = malloc(sizeof(double)*m->rows);
+	if(ortho_vector == NULL){
+		destroy_matrix(ortho);
+		return NULL;
+	}
+	free(ortho->numbers[0]);
 	for(j = 0; j < m->rows; j++)
 		ortho_vector[j] = m->numbers[0][j];
 	ortho->numbers[0] = ortho_vector;
 
 	for(i = 1; i < m->columns; i++){
+		double **grown;
 		ortho_vector = malloc(sizeof(double)*m->rows);
+		if(ortho_vector == NULL){
+			destroy_matrix(ortho);
+			return NULL;
+		}
 		for(j = 0; j < m->rows; j++)
 			ortho_vector[j] = m->numbers[i][j];
 		temp = projection(ortho, ortho_vector, m->rows);
+		if(temp == NULL){
+			free(ortho_vector);
+			destroy_matrix(ortho);
+			return NULL;
+		}
 		vector_subtraction(ortho_vector, temp, m->rows);
 		free(temp);
 
@@ -404,8 +436,14 @@ static inline Matrix *gram_schmidt(Matrix *m){
 			continue;
 		}
 
+		grown = realloc(ortho->numbers, sizeof(double *)*(ortho->columns + 1));
+		if(grown == NULL){
+			free(ortho_vector);
+			destroy_matrix(ortho);
+			return NULL;
+		}
+		ortho->numbers = grown;
 		ortho->columns++;
-		ortho->numbers = realloc(ortho->numbers, sizeof(double *)*ortho->columns);
 		ortho->numbers[ortho->columns - 1] = ortho_vector;
 	}
 	return ortho;
@@ -419,7 +457,13 @@ static inline double *projection(Matrix *m, double *v, int length){
 	if(m->rows != length)
 		return NULL;
 	sum = calloc(sizeof(double), m->rows);
+	if(sum == NULL)
+		return NULL;
 	copy = malloc(sizeof(double)*m->rows);
+	if(copy == NULL){
+		free(sum);
+		return NULL;
+	}
 	for(i = 0; i < m->columns; i++){
 		for(j = 0; j < m->rows; j++)
 			copy[j] = m->numbers[i][j];
@@ -467,6 +511,8 @@ static inline double determinant(Matrix *m){
 	if(m->columns != m->rows)
 		return NAN;
 	copy = clonemx(m);
+	if(copy == NULL)
+		return NAN;
 	det = 1;
 	sign = 1;
 
@@ -526,6 +572,8 @@ static inline Matrix *solved_aug_matrix(Matrix *m){
 	if(m == NULL)
 		return NULL;
 	low = clonemx(m);
+	if(low == NULL)
+		return NULL;
 	/* reduce each of the rows to get a lower triangle */
 	for(i = 0; i < low->columns && i<low->rows; i++){
 		for(j = i + 1; j < low->rows; j++){
