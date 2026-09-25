@@ -32,38 +32,38 @@ typedef struct Matrix{
 	int columns;
 	double **numbers;
 } Matrix;
-Matrix *identity(int length);
-Matrix *inversion(Matrix *m);
-Matrix *constructor(int r, int c);
-int destroy_matrix(Matrix *m);
-int print(Matrix *m);
-int row_swap(Matrix *m, int a, int b);
-int scalar_multiply(Matrix *m, double f);
-int reduce(Matrix *m, int a, int b, double factor);
-int equals(Matrix *m1, Matrix *m2);
+static inline Matrix *identity(int length);
+static inline Matrix *inversion(Matrix *m);
+static inline Matrix *constructor(int r, int c);
+static inline int destroy_matrix(Matrix *m);
+static inline int print(Matrix *m);
+static inline int row_swap(Matrix *m, int a, int b);
+static inline int scalar_multiply(Matrix *m, double f);
+static inline int reduce(Matrix *m, int a, int b, double factor);
+static inline int equals(Matrix *m1, Matrix *m2);
 /* we shouldn`t use clone keyword because it`s extensively used in c++ */
-Matrix *clonemx(Matrix *m);
-Matrix *transpose(Matrix *m);
-Matrix *multiply(Matrix *m1, Matrix *m2);
-int add(Matrix *m1, Matrix *m2);
-int subtract(Matrix *, Matrix *);
-Matrix *gram_schmidt(Matrix *);
-double *projection(Matrix *, double *, int length);
-int zero_vector(Matrix *);
-Matrix *orthonormal_basis(Matrix *);
-double determinant(Matrix *m);
-Matrix *solved_aug_matrix(Matrix *);
-void manual_entry(Matrix **m);
-double *eigenvalues(Matrix *m);
+static inline Matrix *clonemx(Matrix *m);
+static inline Matrix *transpose(Matrix *m);
+static inline Matrix *multiply(Matrix *m1, Matrix *m2);
+static inline int add(Matrix *m1, Matrix *m2);
+static inline int subtract(Matrix *, Matrix *);
+static inline Matrix *gram_schmidt(Matrix *);
+static inline double *projection(Matrix *, double *, int length);
+static inline int zero_vector(Matrix *);
+static inline Matrix *orthonormal_basis(Matrix *);
+static inline double determinant(Matrix *m);
+static inline Matrix *solved_aug_matrix(Matrix *);
+static inline void manual_entry(Matrix **m);
+static inline double *eigenvalues(Matrix *m);
 
-static int row_scalar_multiply(Matrix *m, int row, double factor);
-static double vector_multiply(double *col, double *row, int length);
-static void vector_addition(double *v1, double *v2, int length);
-static void scalar_vector_multiplication(double factor, double *vector, int length);
-static void vector_subtraction(double *v1, double *v2, int length);
+static inline int row_scalar_multiply(Matrix *m, int row, double factor);
+static inline double vector_multiply(double *col, double *row, int length);
+static inline void vector_addition(double *v1, double *v2, int length);
+static inline void scalar_vector_multiplication(double factor, double *vector, int length);
+static inline void vector_subtraction(double *v1, double *v2, int length);
 
 /* return success if there is at least one zero vector in the matrix */
-int zero_vector(Matrix *m){
+static inline int zero_vector(Matrix *m){
 	unsigned int i, j, counter;
 	if(m == NULL)
 		return FAIL;
@@ -80,7 +80,7 @@ int zero_vector(Matrix *m){
 }
 
 /* make a zero matrix of given dimensions */
-Matrix *constructor(int r, int c){
+static inline Matrix *constructor(int r, int c){
 	unsigned int i, k;
 	Matrix *m;
 	if(r <= 0 || c <= 0){
@@ -111,7 +111,7 @@ Matrix *constructor(int r, int c){
 }
 
 /* enter 1s along the main diagonal */
-Matrix *identity(int length){
+static inline Matrix *identity(int length){
 	unsigned int i, j;
 	Matrix *m;
 	m = constructor(length, length);
@@ -125,7 +125,7 @@ Matrix *identity(int length){
 }
 
 /* free memory associated with the matrix  */
-int destroy_matrix(Matrix *m){
+static inline int destroy_matrix(Matrix *m){
 	unsigned int i;
 	if(m == NULL)
 		return FAIL;
@@ -137,7 +137,7 @@ int destroy_matrix(Matrix *m){
 }
 
 /* print the matrix  */
-int print(Matrix *m){
+static inline int print(Matrix *m){
 	unsigned int i, j;
 	if(m == NULL)
 		return FAIL;
@@ -150,7 +150,7 @@ int print(Matrix *m){
 	return SUCC;
 }
 
-int row_swap(Matrix *m, int a, int b){
+static inline int row_swap(Matrix *m, int a, int b){
 	double temp;
 	unsigned int i;
 	if(m == NULL)
@@ -165,7 +165,7 @@ int row_swap(Matrix *m, int a, int b){
 	return SUCC;	
 }
 
-int scalar_multiply(Matrix *m, double scalar){
+static inline int scalar_multiply(Matrix *m, double scalar){
 	int i, j;
 	if(m == NULL)
 		return FAIL;
@@ -177,7 +177,7 @@ int scalar_multiply(Matrix *m, double scalar){
 }
 
 /* reduce row b by factor*a  */
-int reduce(Matrix *m, int a, int b, double factor){
+static inline int reduce(Matrix *m, int a, int b, double factor){
 	int i;
 	if(m == NULL)
 		return FAIL;
@@ -190,7 +190,7 @@ int reduce(Matrix *m, int a, int b, double factor){
 	return SUCC;
 }
 
-Matrix *inversion(Matrix *m){
+static inline Matrix *inversion(Matrix *m){
 	Matrix *invert, *work;
 	unsigned int i, l, pivot_row;
 	int j;
@@ -248,7 +248,7 @@ Matrix *inversion(Matrix *m){
 	return invert;
 }
 
-static int row_scalar_multiply(Matrix *m, int row, double factor){
+static inline int row_scalar_multiply(Matrix *m, int row, double factor){
 	int i;
 	if(m == NULL)
 		return FAIL;
@@ -259,7 +259,7 @@ static int row_scalar_multiply(Matrix *m, int row, double factor){
 	return SUCC;
 }
 
-int equals(Matrix *m1, Matrix *m2){
+static inline int equals(Matrix *m1, Matrix *m2){
 	unsigned int i, j;
 	if(m1 == NULL || m2 == NULL)
 		return FAIL;
@@ -274,7 +274,7 @@ int equals(Matrix *m1, Matrix *m2){
 	return SUCC;
 }
 
-Matrix *clonemx(Matrix *m){
+static inline Matrix *clonemx(Matrix *m){
 	Matrix *copy;
 	unsigned int i, j;
 	if(m == NULL)
@@ -286,7 +286,7 @@ Matrix *clonemx(Matrix *m){
 	return copy;
 }
 
-Matrix *transpose(Matrix *m){
+static inline Matrix *transpose(Matrix *m){
 	Matrix *trans;
 	unsigned int i, j;
 	if(m == NULL)
@@ -300,7 +300,7 @@ Matrix *transpose(Matrix *m){
 }
 
 /* m1 x m2  */
-Matrix *multiply(Matrix *m1, Matrix *m2){
+static inline Matrix *multiply(Matrix *m1, Matrix *m2){
 	Matrix *product, *trans;
 	unsigned int i, j;
 	if(m1 == NULL || m2 == NULL)
@@ -319,7 +319,7 @@ Matrix *multiply(Matrix *m1, Matrix *m2){
 }
 
 /* v1 x v2  -- simply a helper function -- computes dot product between two vectors*/
-static double vector_multiply(double *col, double *row, int length){
+static inline double vector_multiply(double *col, double *row, int length){
 	double sum;
 	unsigned int i;
 	sum = 0;
@@ -330,7 +330,7 @@ static double vector_multiply(double *col, double *row, int length){
 }
 
 /* m1 += m2  */
-int add(Matrix *m1, Matrix *m2){
+static inline int add(Matrix *m1, Matrix *m2){
 	unsigned int i, j;
 	if(m1 == NULL || m2 == NULL)
 		return FAIL;
@@ -343,7 +343,7 @@ int add(Matrix *m1, Matrix *m2){
 	return SUCC;
 }
 
-int subtract(Matrix *m1, Matrix *m2){
+static inline int subtract(Matrix *m1, Matrix *m2){
 	unsigned int i, j;
 	if(m1 == NULL || m2 == NULL)
 		return FAIL;
@@ -357,7 +357,7 @@ int subtract(Matrix *m1, Matrix *m2){
 }
 
 /* change m into an orthogonal matrix  */
-Matrix *gram_schmidt(Matrix *m){
+static inline Matrix *gram_schmidt(Matrix *m){
 	Matrix *ortho;
 	double *ortho_vector, *temp;
 	unsigned int i, j;
@@ -392,7 +392,7 @@ Matrix *gram_schmidt(Matrix *m){
 	return NULL;
 }
 
-double *projection(Matrix *m, double *v, int length){
+static inline double *projection(Matrix *m, double *v, int length){
 	unsigned int i, j;
 	double *sum, *copy, *vector, factor, denom;
 	if(m == NULL || v == NULL)
@@ -417,28 +417,28 @@ double *projection(Matrix *m, double *v, int length){
 }
 
 /* v1 *= v2  */
-static void scalar_vector_multiplication(double factor, double *vector, int length){
+static inline void scalar_vector_multiplication(double factor, double *vector, int length){
 	unsigned int i;
 	for(i = 0; i < length; i++)
 		vector[i] *= factor;
 }
 
 /* v1 += v2  */
-static void vector_addition(double *v1, double *v2, int length){
+static inline void vector_addition(double *v1, double *v2, int length){
 	unsigned int i;
 	for(i = 0; i < length; i++){
 		v1[i] += v2[i];
 	}
 }
 
-static void vector_subtraction(double *v1, double *v2, int length){
+static inline void vector_subtraction(double *v1, double *v2, int length){
 	unsigned int i;
 	for(i = 0; i < length; i++){
 		v1[i] -= v2[i];
 	}
 }
 
-double determinant(Matrix *m){
+static inline double determinant(Matrix *m){
 	Matrix *copy;
 	unsigned int i, j, l;
 	int sign;
@@ -477,7 +477,7 @@ double determinant(Matrix *m){
 	return det * sign;
 }
 
-Matrix *orthonormal_basis(Matrix *m){
+static inline Matrix *orthonormal_basis(Matrix *m){
 	Matrix *orthog;
 	unsigned int i, j;
 	double factor;
@@ -495,7 +495,7 @@ Matrix *orthonormal_basis(Matrix *m){
 	return orthog;
 }
 
-Matrix *solved_aug_matrix(Matrix *m){
+static inline Matrix *solved_aug_matrix(Matrix *m){
 	Matrix *low;
 	double factor;
 	unsigned int i, l;
@@ -543,7 +543,7 @@ Matrix *solved_aug_matrix(Matrix *m){
    (for matrices with real, distinct-magnitude eigenvalues) to a matrix
    whose diagonal holds the eigenvalues. Row reduction, used previously,
    does not preserve eigenvalues and was simply wrong. */
-double *eigenvalues(Matrix *m){
+static inline double *eigenvalues(Matrix *m){
 	double *values;
 	Matrix *cur, *q, *qt, *r, *next;
 	unsigned int i, j, iter;
@@ -623,7 +623,7 @@ double *eigenvalues(Matrix *m){
 }
 
 /* make your own matrix */
-void manual_entry(Matrix **m){
+static inline void manual_entry(Matrix **m){
 	Matrix *temp;
 	int i, rows, cols;
 	double number;
